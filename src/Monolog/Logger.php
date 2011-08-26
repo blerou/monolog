@@ -141,7 +141,7 @@ class Logger
      * @param array $context The log context
      * @return Boolean Whether the record has been processed
      */
-    public function addRecord($level, $levelName, $message, array $context = array())
+    private function addRecord($level, $levelName, $message, array $context = array())
     {
         $record = array(
             'message' => (string) $message,
@@ -152,10 +152,7 @@ class Logger
             'datetime' => new \DateTime(),
             'extra' => array(),
         );
-	    // found at least one, process message and dispatch it
-        foreach ($this->processors as $processor) {
-	        $record = call_user_func($processor, $record);
-        };
+	    $record = $this->preprocessRecord($record);
         foreach ($this->handlers as $handler) {
             if ($handler->isHandling($record) && $handler->handle($record)) {
 	            return true;
@@ -163,6 +160,15 @@ class Logger
         }
         return false;
     }
+
+	private function preprocessRecord($record)
+	{
+	    // found at least one, process message and dispatch it
+        foreach ($this->processors as $processor) {
+	        $record = call_user_func($processor, $record);
+        };
+		return $record;
+	}
 
     /**
      * Adds a log record at the DEBUG level.
