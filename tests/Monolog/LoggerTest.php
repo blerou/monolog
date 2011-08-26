@@ -65,19 +65,6 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 	}
 
     /**
-     * @covers Monolog\Logger::addRecord
-     */
-    public function testLogNotHandled()
-    {
-        $handler = $this->getMock('Monolog\Handler\NullHandler', array('handle'), array(Logger::ERROR));
-        $handler->expects($this->never())
-            ->method('handle');
-        $this->logger->pushHandler($handler);
-
-        $this->assertFalse($this->logger->addWarning('test'));
-    }
-
-    /**
      * @covers Monolog\Logger::pushHandler
      * @covers Monolog\Logger::popHandler
      * @expectedException LogicException
