@@ -16,14 +16,24 @@ use Monolog\Handler\TestHandler;
 
 class LoggerTest extends \PHPUnit_Framework_TestCase
 {
+	const NAME = 'foo channel';
+
+	/**
+	 * @var Logger
+	 */
+	private $logger;
+
+	protected function setUp()
+	{
+		$this->logger = new Logger(self::NAME);
+	}
 
     /**
      * @covers Monolog\Logger::getName()
      */
     public function testGetName()
     {
-        $logger = new Logger('foo');
-        $this->assertEquals('foo', $logger->getName());
+        $this->assertEquals(self::NAME, $this->logger->getName());
     }
 
     /**
@@ -31,12 +41,11 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function testChannel()
     {
-        $logger = new Logger('foo');
         $handler = new TestHandler;
-        $logger->pushHandler($handler);
-        $logger->addWarning('test');
+        $this->logger->pushHandler($handler);
+        $this->logger->addWarning('test');
         list($record) = $handler->getRecords();
-        $this->assertEquals('foo', $record['channel']);
+        $this->assertEquals(self::NAME, $record['channel']);
     }
 
     /**
@@ -44,14 +53,12 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function testLog()
     {
-        $logger = new Logger(__METHOD__);
-
         $handler = $this->getMock('Monolog\Handler\NullHandler', array('handle'));
         $handler->expects($this->once())
             ->method('handle');
-        $logger->pushHandler($handler);
+        $this->logger->pushHandler($handler);
 
-        $this->assertTrue($logger->addWarning('test'));
+        $this->assertTrue($this->logger->addWarning('test'));
     }
 
     /**
@@ -59,14 +66,12 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function testLogNotHandled()
     {
-        $logger = new Logger(__METHOD__);
-
         $handler = $this->getMock('Monolog\Handler\NullHandler', array('handle'), array(Logger::ERROR));
         $handler->expects($this->never())
             ->method('handle');
-        $logger->pushHandler($handler);
+        $this->logger->pushHandler($handler);
 
-        $this->assertFalse($logger->addWarning('test'));
+        $this->assertFalse($this->logger->addWarning('test'));
     }
 
     /**
@@ -76,16 +81,15 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function testPushPopHandler()
     {
-        $logger = new Logger(__METHOD__);
         $handler1 = new TestHandler;
         $handler2 = new TestHandler;
 
-        $logger->pushHandler($handler1);
-        $logger->pushHandler($handler2);
+        $this->logger->pushHandler($handler1);
+        $this->logger->pushHandler($handler2);
 
-        $this->assertEquals($handler2, $logger->popHandler());
-        $this->assertEquals($handler1, $logger->popHandler());
-        $logger->popHandler();
+        $this->assertEquals($handler2, $this->logger->popHandler());
+        $this->assertEquals($handler1, $this->logger->popHandler());
+        $this->logger->popHandler();
     }
 
     /**
@@ -95,16 +99,15 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function testPushPopProcessor()
     {
-        $logger = new Logger(__METHOD__);
         $processor1 = new WebProcessor;
         $processor2 = new WebProcessor;
 
-        $logger->pushProcessor($processor1);
-        $logger->pushProcessor($processor2);
+        $this->logger->pushProcessor($processor1);
+        $this->logger->pushProcessor($processor2);
 
-        $this->assertEquals($processor2, $logger->popProcessor());
-        $this->assertEquals($processor1, $logger->popProcessor());
-        $logger->popProcessor();
+        $this->assertEquals($processor2, $this->logger->popProcessor());
+        $this->assertEquals($processor1, $this->logger->popProcessor());
+        $this->logger->popProcessor();
     }
 
     /**
@@ -112,14 +115,13 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function testProcessorsAreExecuted()
     {
-        $logger = new Logger(__METHOD__);
         $handler = new TestHandler;
-        $logger->pushHandler($handler);
-        $logger->pushProcessor(function($record) {
+        $this->logger->pushHandler($handler);
+        $this->logger->pushProcessor(function($record) {
             $record['extra']['win'] = true;
             return $record;
         });
-        $logger->addError('test');
+        $this->logger->addError('test');
         list($record) = $handler->getRecords();
         $this->assertTrue($record['extra']['win']);
     }
@@ -143,10 +145,9 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      */
     public function testLogMethods($method, $expectedLevel)
     {
-        $logger = new Logger('foo');
         $handler = new TestHandler;
-        $logger->pushHandler($handler);
-        $logger->{$method}('test');
+        $this->logger->pushHandler($handler);
+        $this->logger->{$method}('test');
         list($record) = $handler->getRecords();
         $this->assertEquals($expectedLevel, $record['level']);
     }
