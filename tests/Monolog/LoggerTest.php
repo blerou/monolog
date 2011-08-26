@@ -64,6 +64,29 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 		$this->logger->addWarning('test');
 	}
 
+	/**
+	 * @test
+	 */
+	public function onlyTheFirstCapableHandlerNotified()
+	{
+		$handler1 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+		$handler1->expects($this->once())->method('isHandling')->will($this->returnValue(false));
+		$handler1->expects($this->never())->method('handle');
+
+		$handler2 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+		$handler2->expects($this->once())->method('isHandling')->will($this->returnValue(true));
+		$handler2->expects($this->once())->method('handle')->will($this->returnValue(true));
+
+		$handler3 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+		$handler3->expects($this->never())->method('isHandling');
+		$handler3->expects($this->never())->method('handle');
+
+		$this->logger->pushHandler($handler3);
+		$this->logger->pushHandler($handler2);
+		$this->logger->pushHandler($handler1);
+		$this->logger->addWarning('irrelevant');
+	}
+
     /**
      * @covers Monolog\Logger::pushHandler
      * @covers Monolog\Logger::popHandler

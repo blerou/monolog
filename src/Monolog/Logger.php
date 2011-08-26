@@ -136,15 +136,13 @@ class Logger
      * Adds a log record.
      *
      * @param integer $level The logging level
+     * @param string $levelName The logging level name
      * @param string $message The log message
      * @param array $context The log context
      * @return Boolean Whether the record has been processed
      */
     public function addRecord($level, $levelName, $message, array $context = array())
     {
-        if (!$this->handlers) {
-            $this->pushHandler(new StreamHandler('php://stderr', self::DEBUG));
-        }
         $record = array(
             'message' => (string) $message,
             'context' => $context,
@@ -154,28 +152,16 @@ class Logger
             'datetime' => new \DateTime(),
             'extra' => array(),
         );
-        // check if any message will handle this message
-        $handlerKey = null;
-        foreach ($this->handlers as $key => $handler) {
-            if ($handler->isHandling($record)) {
-                $handlerKey = $key;
-                break;
+	    // found at least one, process message and dispatch it
+        foreach ($this->processors as $processor) {
+	        $record = call_user_func($processor, $record);
+        };
+        foreach ($this->handlers as $handler) {
+            if ($handler->isHandling($record) && $handler->handle($record)) {
+	            return true;
             }
         }
-        // none found
-        if (null === $handlerKey) {
-            return false;
-        }
-        // found at least one, process message and dispatch it
-        foreach ($this->processors as $processor) {
-            $record = call_user_func($processor, $record);
-        }
-        while (isset($this->handlers[$handlerKey]) &&
-            false === $this->handlers[$handlerKey]->handle($record)) {
-            $handlerKey++;
-        }
-
-        return true;
+        return false;
     }
 
     /**
