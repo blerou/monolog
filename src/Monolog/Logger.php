@@ -149,7 +149,7 @@ class Logger
      * @param array $context The log context
      * @return Boolean Whether the record has been processed
      */
-    public function addRecord($level, $message, array $context = array())
+    public function addRecord($level, $levelName, $message, array $context = array())
     {
         if (!$this->handlers) {
             $this->pushHandler(new StreamHandler('php://stderr', self::DEBUG));
@@ -158,7 +158,7 @@ class Logger
             'message' => (string) $message,
             'context' => $context,
             'level' => $level,
-            'level_name' => self::getLevelName($level),
+            'level_name' => $levelName,
             'channel' => $this->name,
             'datetime' => new \DateTime(),
             'extra' => array(),
@@ -196,7 +196,7 @@ class Logger
      */
     public function addDebug($message, array $context = array())
     {
-        return $this->addRecord(self::DEBUG, $message, $context);
+        return $this->addRecord(self::DEBUG, 'DEBUG', $message, $context);
     }
 
     /**
@@ -208,7 +208,7 @@ class Logger
      */
     public function addInfo($message, array $context = array())
     {
-        return $this->addRecord(self::INFO, $message, $context);
+        return $this->addRecord(self::INFO, 'INFO', $message, $context);
     }
 
     /**
@@ -220,7 +220,7 @@ class Logger
      */
     public function addWarning($message, array $context = array())
     {
-        return $this->addRecord(self::WARNING, $message, $context);
+        return $this->addRecord(self::WARNING, 'WARNING', $message, $context);
     }
 
     /**
@@ -232,7 +232,7 @@ class Logger
      */
     public function addError($message, array $context = array())
     {
-        return $this->addRecord(self::ERROR, $message, $context);
+        return $this->addRecord(self::ERROR, 'ERROR', $message, $context);
     }
 
     /**
@@ -244,7 +244,7 @@ class Logger
      */
     public function addCritical($message, array $context = array())
     {
-        return $this->addRecord(self::CRITICAL, $message, $context);
+        return $this->addRecord(self::CRITICAL, 'CRITICAL', $message, $context);
     }
 
     /**
@@ -256,7 +256,7 @@ class Logger
      */
     public function addAlert($message, array $context = array())
     {
-        return $this->addRecord(self::ALERT, $message, $context);
+        return $this->addRecord(self::ALERT, 'ALERT', $message, $context);
     }
 
     /**
