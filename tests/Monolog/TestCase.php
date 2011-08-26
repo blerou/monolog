@@ -20,10 +20,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
     {
         return array(
             'message' => $message,
-            'context' => array(),
             'level' => $level,
-            'level_name' => Logger::getLevelName($level),
-            'channel' => 'test',
             'datetime' => new \DateTime(),
             'extra' => array(),
         );
