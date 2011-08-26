@@ -52,14 +52,6 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 	}
 
     /**
-     * @covers Monolog\Logger::getName()
-     */
-    public function testGetName()
-    {
-        $this->assertEquals(self::NAME, $this->logger->getName());
-    }
-
-    /**
      * @covers Monolog\Logger::__construct
      */
     public function testChannel()
