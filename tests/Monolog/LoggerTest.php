@@ -31,7 +31,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 	/**
 	 * @test
 	 */
-	public function notifiesTheHandlerWhenLogRecordHasBeenAdded()
+	public function notifiesTheHandlerWhenLogRecordHasBeenAddedAndTheHandlerCapableWithIt()
 	{
 		$message = 'test';
 
@@ -50,19 +50,6 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 		$this->logger->pushHandler($handler);
 		$this->logger->addWarning($message);
 	}
-
-    /**
-     * @covers Monolog\Logger::addRecord
-     */
-    public function testLog()
-    {
-        $handler = $this->getMock('Monolog\Handler\NullHandler', array('handle'));
-        $handler->expects($this->once())
-            ->method('handle');
-        $this->logger->pushHandler($handler);
-
-        $this->assertTrue($this->logger->addWarning('test'));
-    }
 
     /**
      * @covers Monolog\Logger::addRecord
