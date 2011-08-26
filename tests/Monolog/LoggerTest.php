@@ -149,14 +149,6 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
      * @covers Monolog\Logger::addError
      * @covers Monolog\Logger::addCritical
      * @covers Monolog\Logger::addAlert
-     * @covers Monolog\Logger::debug
-     * @covers Monolog\Logger::info
-     * @covers Monolog\Logger::notice
-     * @covers Monolog\Logger::warn
-     * @covers Monolog\Logger::err
-     * @covers Monolog\Logger::crit
-     * @covers Monolog\Logger::alert
-     * @covers Monolog\Logger::emerg
      */
     public function testLogMethods($method, $expectedLevel)
     {
@@ -177,16 +169,6 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
             array('addError',    Logger::ERROR),
             array('addCritical', Logger::CRITICAL),
             array('addAlert',    Logger::ALERT),
-
-            // ZF/Sf2 compat methods
-            array('debug',  Logger::DEBUG),
-            array('info',   Logger::INFO),
-            array('notice', Logger::INFO),
-            array('warn',   Logger::WARNING),
-            array('err',    Logger::ERROR),
-            array('crit',   Logger::CRITICAL),
-            array('alert',  Logger::ALERT),
-            array('emerg',  Logger::ALERT),
         );
     }
 }
