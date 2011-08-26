@@ -64,15 +64,6 @@ class Logger
      */
     const ALERT = 550;
 
-    protected static $levels = array(
-        100 => 'DEBUG',
-        200 => 'INFO',
-        300 => 'WARNING',
-        400 => 'ERROR',
-        500 => 'CRITICAL',
-        550 => 'ALERT',
-    );
-
     protected $name;
 
     /**
@@ -257,17 +248,6 @@ class Logger
     public function addAlert($message, array $context = array())
     {
         return $this->addRecord(self::ALERT, 'ALERT', $message, $context);
-    }
-
-    /**
-     * Gets the name of the logging level.
-     *
-     * @param integer $level
-     * @return string
-     */
-    public static function getLevelName($level)
-    {
-        return self::$levels[$level];
     }
 
     // ZF Logger Compat
