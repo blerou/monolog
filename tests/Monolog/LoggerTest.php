@@ -52,18 +52,6 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 	}
 
     /**
-     * @covers Monolog\Logger::__construct
-     */
-    public function testChannel()
-    {
-        $handler = new TestHandler;
-        $this->logger->pushHandler($handler);
-        $this->logger->addWarning('test');
-        list($record) = $handler->getRecords();
-        $this->assertEquals(self::NAME, $record['channel']);
-    }
-
-    /**
      * @covers Monolog\Logger::addRecord
      */
     public function testLog()
