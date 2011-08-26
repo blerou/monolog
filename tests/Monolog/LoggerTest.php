@@ -28,6 +28,29 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 		$this->logger = new Logger(self::NAME);
 	}
 
+	/**
+	 * @test
+	 */
+	public function notifiesTheHandlerWhenLogRecordHasBeenAdded()
+	{
+		$message = 'test';
+
+		$validRecord = $this->logicalAnd(
+			$this->isType('array'),
+			$this->arrayHasKey('message'),
+			$this->contains($message),
+			$this->arrayHasKey('channel'),
+			$this->contains(self::NAME)
+		);
+
+		$handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+		$handler->expects($this->once())->method('isHandling')->will($this->returnValue(true));
+		$handler->expects($this->once())->method('handle')->with($validRecord);
+
+		$this->logger->pushHandler($handler);
+		$this->logger->addWarning($message);
+	}
+
     /**
      * @covers Monolog\Logger::getName()
      */
