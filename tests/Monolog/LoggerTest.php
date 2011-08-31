@@ -87,6 +87,43 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 		$this->logger->addWarning('irrelevant');
 	}
 
+     /**
+     * @covers Monolog\Logger::__construct
+     */
+    public function testChannel()
+    {
+        $handler = new TestHandler;
+        $this->logger->pushHandler($handler);
+        $this->logger->addWarning('test');
+        list($record) = $handler->getRecords();
+        $this->assertEquals(self::NAME, $record['channel']);
+    }
+
+    /**
+     * @covers Monolog\Logger::addRecord
+     */
+    public function testLog()
+    {
+        $handler = $this->getMock('Monolog\Handler\NullHandler', array('handle'));
+        $handler->expects($this->once())->method('handle');
+        $this->logger->pushHandler($handler);
+
+        $this->assertTrue($this->logger->addWarning('test'));
+    }
+
+    /**
+     * @covers Monolog\Logger::addRecord
+     */
+    public function testLogNotHandled()
+    {
+        $handler = $this->getMock('Monolog\Handler\NullHandler', array('handle'), array(Logger::ERROR));
+        $handler->expects($this->never())
+            ->method('handle');
+        $this->logger->pushHandler($handler);
+
+        $this->assertFalse($this->logger->addWarning('test'));
+    }
+
     /**
      * @covers Monolog\Logger::pushHandler
      * @covers Monolog\Logger::popHandler

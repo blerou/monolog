@@ -154,7 +154,8 @@ class Logger
         );
 	    $record = $this->preprocessRecord($record);
         foreach ($this->handlers as $handler) {
-            if ($handler->isHandling($record) && $handler->handle($record)) {
+            if ($handler->isHandling($record)) {
+	            $handler->handle($record);
 	            return true;
             }
         }
