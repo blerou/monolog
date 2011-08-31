@@ -152,10 +152,9 @@ class Logger
             'datetime' => new \DateTime(),
             'extra' => array(),
         );
-	    $record = $this->preprocessRecord($record);
         foreach ($this->handlers as $handler) {
             if ($handler->isHandling($record)) {
-	            $handler->handle($record);
+	            $handler->handle($this->preprocessRecord($record));
 	            return true;
             }
         }
