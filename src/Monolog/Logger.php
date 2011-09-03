@@ -133,44 +133,6 @@ class Logger
     }
 
     /**
-     * Adds a log record.
-     *
-     * @param integer $level The logging level
-     * @param string $levelName The logging level name
-     * @param string $message The log message
-     * @param array $context The log context
-     * @return Boolean Whether the record has been processed
-     */
-    private function addRecord($level, $levelName, $message, array $context = array())
-    {
-        $record = array(
-            'message' => (string) $message,
-            'context' => $context,
-            'level' => $level,
-            'level_name' => $levelName,
-            'channel' => $this->name,
-            'datetime' => new \DateTime(),
-            'extra' => array(),
-        );
-        foreach ($this->handlers as $handler) {
-            if ($handler->isHandling($record)) {
-	            $handler->handle($this->preprocessRecord($record));
-	            return true;
-            }
-        }
-        return false;
-    }
-
-	private function preprocessRecord($record)
-	{
-	    // found at least one, process message and dispatch it
-        foreach ($this->processors as $processor) {
-	        $record = call_user_func($processor, $record);
-        };
-		return $record;
-	}
-
-    /**
      * Adds a log record at the DEBUG level.
      *
      * @param string $message The log message
@@ -179,7 +141,7 @@ class Logger
      */
     public function addDebug($message, array $context = array())
     {
-        return $this->addRecord(self::DEBUG, 'DEBUG', $message, $context);
+        return $this->addRecord($this->createRecord(self::DEBUG, 'DEBUG', $message, $context));
     }
 
     /**
@@ -191,7 +153,7 @@ class Logger
      */
     public function addInfo($message, array $context = array())
     {
-        return $this->addRecord(self::INFO, 'INFO', $message, $context);
+        return $this->addRecord($this->createRecord(self::INFO, 'INFO', $message, $context));
     }
 
     /**
@@ -203,7 +165,7 @@ class Logger
      */
     public function addWarning($message, array $context = array())
     {
-        return $this->addRecord(self::WARNING, 'WARNING', $message, $context);
+        return $this->addRecord($this->createRecord(self::WARNING, 'WARNING', $message, $context));
     }
 
     /**
@@ -215,7 +177,7 @@ class Logger
      */
     public function addError($message, array $context = array())
     {
-        return $this->addRecord(self::ERROR, 'ERROR', $message, $context);
+        return $this->addRecord($this->createRecord(self::ERROR, 'ERROR', $message, $context));
     }
 
     /**
@@ -227,7 +189,7 @@ class Logger
      */
     public function addCritical($message, array $context = array())
     {
-        return $this->addRecord(self::CRITICAL, 'CRITICAL', $message, $context);
+        return $this->addRecord($this->createRecord(self::CRITICAL, 'CRITICAL', $message, $context));
     }
 
     /**
@@ -239,6 +201,53 @@ class Logger
      */
     public function addAlert($message, array $context = array())
     {
-        return $this->addRecord(self::ALERT, 'ALERT', $message, $context);
+        return $this->addRecord($this->createRecord(self::ALERT, 'ALERT', $message, $context));
     }
+
+    /**
+     * creates a log record.
+     *
+     * @param integer $level The logging level
+     * @param string $levelName The logging level name
+     * @param string $message The log message
+     * @param array $context The log context
+     * @return array
+     */
+	private function createRecord($level, $levelName, $message, array $context = array())
+	{
+		return array(
+            'message' => (string) $message,
+            'context' => $context,
+            'level' => $level,
+            'level_name' => $levelName,
+            'channel' => $this->name,
+            'datetime' => new \DateTime(),
+            'extra' => array(),
+        );
+	}
+
+    /**
+     * Adds a log record.
+     *
+     * @param array $record the log record to add
+     * @return Boolean Whether the record has been processed
+     */
+    private function addRecord($record)
+    {
+        foreach ($this->handlers as $handler) {
+            if ($handler->isHandling($record)) {
+	            $handler->handle($this->preprocessRecord($record));
+	            return true;
+            }
+        }
+        return false;
+    }
+
+	private function preprocessRecord($record)
+	{
+        foreach ($this->processors as $processor) {
+	        $record = call_user_func($processor, $record);
+        };
+		return $record;
+	}
 }
