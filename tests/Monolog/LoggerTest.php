@@ -57,7 +57,7 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 	public function neverNotifyTheHandlerWhenItIsntCapableWith()
 	{
 		$handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler->expects($this->once())->method('isHandling')->will($this->returnValue(false));
+		$handler->expects($this->any())->method('isHandling')->will($this->returnValue(false));
 		$handler->expects($this->never())->method('handle');
 
 		$this->logger->pushHandler($handler);
@@ -70,11 +70,11 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 	public function onlyTheFirstCapableHandlerNotified()
 	{
 		$handler1 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler1->expects($this->once())->method('isHandling')->will($this->returnValue(false));
+		$handler1->expects($this->any())->method('isHandling')->will($this->returnValue(false));
 		$handler1->expects($this->never())->method('handle');
 
 		$handler2 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler2->expects($this->once())->method('isHandling')->will($this->returnValue(true));
+		$handler2->expects($this->any())->method('isHandling')->will($this->returnValue(true));
 		$handler2->expects($this->once())->method('handle')->will($this->returnValue(true));
 
 		$handler3 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
