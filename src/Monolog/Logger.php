@@ -94,19 +94,6 @@ class Logger
     }
 
     /**
-     * Pops an handler from the stack
-     *
-     * @return HandlerInterface
-     */
-    public function popHandler()
-    {
-        if (!$this->handlers) {
-            throw new \LogicException('You tried to pop from an empty handler stack.');
-        }
-        return array_shift($this->handlers);
-    }
-
-    /**
      * Adds a processor in the stack.
      *
      * @param callable $callback
@@ -117,19 +104,6 @@ class Logger
             throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method), '.var_export($callback, true).' given');
         }
         array_unshift($this->processors, $callback);
-    }
-
-    /**
-     * Removes the processor on top of the stack and returns it.
-     *
-     * @return callable
-     */
-    public function popProcessor()
-    {
-        if (!$this->processors) {
-            throw new \LogicException('You tried to pop from an empty processor stack.');
-        }
-        return array_shift($this->processors);
     }
 
     /**

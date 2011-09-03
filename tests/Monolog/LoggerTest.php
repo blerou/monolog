@@ -124,41 +124,19 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->logger->addWarning('test'));
     }
 
-    /**
-     * @covers Monolog\Logger::pushHandler
-     * @covers Monolog\Logger::popHandler
-     * @expectedException LogicException
-     */
-    public function testPushPopHandler()
-    {
-        $handler1 = new TestHandler;
-        $handler2 = new TestHandler;
-
-        $this->logger->pushHandler($handler1);
-        $this->logger->pushHandler($handler2);
-
-        $this->assertEquals($handler2, $this->logger->popHandler());
-        $this->assertEquals($handler1, $this->logger->popHandler());
-        $this->logger->popHandler();
-    }
-
-    /**
-     * @covers Monolog\Logger::pushProcessor
-     * @covers Monolog\Logger::popProcessor
-     * @expectedException LogicException
-     */
-    public function testPushPopProcessor()
-    {
-        $processor1 = new WebProcessor;
-        $processor2 = new WebProcessor;
-
-        $this->logger->pushProcessor($processor1);
-        $this->logger->pushProcessor($processor2);
-
-        $this->assertEquals($processor2, $this->logger->popProcessor());
-        $this->assertEquals($processor1, $this->logger->popProcessor());
-        $this->logger->popProcessor();
-    }
+	/**
+	 * @test
+	 */
+	public function aProcessorProcessesALogMessage()
+	{
+		$message = 'message';
+		$test = $this;
+		$this->logger->pushProcessor(function($record) use($test, $message) { $test->assertEquals($message, $record['message']); return $record; });
+		$handler = $this->getMock('Monolog\Handler\NullHandler');
+		$handler->expects($this->any())->method('isHandling')->will($this->returnValue(true));
+		$this->logger->pushHandler($handler);
+		$this->logger->addWarning($message);
+	}
 
     /**
      * @covers Monolog\Logger::addRecord
