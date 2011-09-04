@@ -16,73 +16,73 @@ use Monolog\Handler\TestHandler;
 
 class LoggerTest extends \PHPUnit_Framework_TestCase
 {
-	const NAME = 'foo channel';
+    const NAME = 'foo channel';
 
-	/**
-	 * @var Logger
-	 */
-	private $logger;
+    /**
+     * @var Logger
+     */
+    private $logger;
 
-	protected function setUp()
-	{
-		$this->logger = new Logger(self::NAME);
-	}
+    protected function setUp()
+    {
+        $this->logger = new Logger(self::NAME);
+    }
 
-	/**
-	 * @test
-	 */
-	public function notifiesTheHandlerWhenLogRecordHasBeenAddedAndTheHandlerCapableWithIt()
-	{
-		$message = 'test';
+    /**
+     * @test
+     */
+    public function notifiesTheHandlerWhenLogRecordHasBeenAddedAndTheHandlerCapableWithIt()
+    {
+        $message = 'test';
 
-		$validRecord = $this->logicalAnd(
-			$this->isType('array'),
-			$this->arrayHasKey('message'),
-			$this->contains($message),
-			$this->arrayHasKey('channel'),
-			$this->contains(self::NAME)
-		);
+        $validRecord = $this->logicalAnd(
+            $this->isType('array'),
+            $this->arrayHasKey('message'),
+            $this->contains($message),
+            $this->arrayHasKey('channel'),
+            $this->contains(self::NAME)
+        );
 
-		$handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler->expects($this->never())->method('isHandling')->will($this->returnValue(true));
-		$handler->expects($this->once())->method('handle')->with($validRecord);
+        $handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+        $handler->expects($this->never())->method('isHandling')->will($this->returnValue(true));
+        $handler->expects($this->once())->method('handle')->with($validRecord);
 
-		$this->logger->addWarningHandler($handler);
-		$this->logger->addWarning($message);
-	}
+        $this->logger->addWarningHandler($handler);
+        $this->logger->addWarning($message);
+    }
 
-	/**
-	 * @test
-	 */
-	public function neverNotifyTheHandlerWhenItIsntCapableWith()
-	{
-		$handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler->expects($this->never())->method('isHandling');
-		$handler->expects($this->never())->method('handle');
+    /**
+     * @test
+     */
+    public function neverNotifyTheHandlerWhenItIsntCapableWith()
+    {
+        $handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+        $handler->expects($this->never())->method('isHandling');
+        $handler->expects($this->never())->method('handle');
 
-		$this->logger->addErrorHandler($handler);
-		$this->logger->addWarning('test');
-	}
+        $this->logger->addErrorHandler($handler);
+        $this->logger->addWarning('test');
+    }
 
-	/**
-	 * @test
-	 */
-	public function onlyTheFirstCapableHandlerNotified()
-	{
-		$handler1 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler1->expects($this->never())->method('isHandling');
-		$handler1->expects($this->never())->method('handle');
+    /**
+     * @test
+     */
+    public function onlyTheFirstCapableHandlerNotified()
+    {
+        $handler1 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+        $handler1->expects($this->never())->method('isHandling');
+        $handler1->expects($this->never())->method('handle');
 
-		$handler2 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler2->expects($this->never())->method('isHandling');
-		$handler2->expects($this->once())->method('handle')->will($this->returnValue(true));
+        $handler2 = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
+        $handler2->expects($this->never())->method('isHandling');
+        $handler2->expects($this->once())->method('handle')->will($this->returnValue(true));
 
         $this->logger->addErrorHandler($handler1);
         $this->logger->addWarningHandler($handler2);
-		$this->logger->addWarning('irrelevant');
-	}
+        $this->logger->addWarning('irrelevant');
+    }
 
-     /**
+    /**
      * @covers Monolog\Logger::__construct
      */
     public function testChannel()
@@ -112,26 +112,28 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     public function testLogNotHandled()
     {
         $handler = $this->getMock('Monolog\Handler\NullHandler', array('handle'), array(Logger::ERROR));
-        $handler->expects($this->never())
-            ->method('handle');
+        $handler->expects($this->never())->method('handle');
         $this->logger->pushHandler($handler);
 
         $this->assertFalse($this->logger->addWarning('test'));
     }
 
-	/**
-	 * @test
-	 */
-	public function aProcessorProcessesALogMessage()
-	{
-		$message = 'message';
-		$test = $this;
-		$this->logger->pushProcessor(function($record) use($test, $message) { $test->assertEquals($message, $record['message']); return $record; });
-		$handler = $this->getMock('Monolog\Handler\NullHandler');
-		$handler->expects($this->any())->method('isHandling')->will($this->returnValue(true));
-		$this->logger->pushHandler($handler);
-		$this->logger->addWarning($message);
-	}
+    /**
+     * @test
+     */
+    public function aProcessorProcessesALogMessage()
+    {
+        $message = 'message';
+        $test = $this;
+        $this->logger->pushProcessor(function($record) use($test, $message) {
+            $test->assertEquals($message, $record['message']);
+            return $record;
+        });
+        $handler = $this->getMock('Monolog\Handler\NullHandler');
+        $handler->expects($this->any())->method('isHandling')->will($this->returnValue(true));
+        $this->logger->pushHandler($handler);
+        $this->logger->addWarning($message);
+    }
 
     /**
      * @covers Monolog\Logger::addRecord
@@ -171,12 +173,12 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     {
         return array(
             // monolog methods
-            array('addDebug',    Logger::DEBUG),
-            array('addInfo',     Logger::INFO),
-            array('addWarning',  Logger::WARNING),
-            array('addError',    Logger::ERROR),
+            array('addDebug', Logger::DEBUG),
+            array('addInfo', Logger::INFO),
+            array('addWarning', Logger::WARNING),
+            array('addError', Logger::ERROR),
             array('addCritical', Logger::CRITICAL),
-            array('addAlert',    Logger::ALERT),
+            array('addAlert', Logger::ALERT),
         );
     }
 }
