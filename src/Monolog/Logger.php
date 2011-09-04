@@ -108,7 +108,17 @@ class Logger
 
     public function addWarningHandler($handler)
     {
-        $this->handlers[] = array($handler, self::WARNING);
+        $this->addHandler($handler, self::WARNING);
+    }
+
+    public function addErrorHandler($handler)
+    {
+        $this->addHandler($handler, self::ERROR);
+    }
+
+    private function addHandler($handler, $priority)
+    {
+        $this->handlers[] = array($handler, $priority);
     }
 
     /**
@@ -228,7 +238,7 @@ class Logger
         foreach ($this->handlers as $handler) {
             if (is_array($handler) && $handler[1] == $priority) {
                 return $handler[0];
-            } else if ($handler->isHandling(array('level' => $priority))) {
+            } else if ($handler instanceof HandlerInterface && $handler->isHandling(array('level' => $priority))) {
                 return $handler;
             }
         }

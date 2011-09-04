@@ -57,10 +57,10 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 	public function neverNotifyTheHandlerWhenItIsntCapableWith()
 	{
 		$handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler->expects($this->any())->method('isHandling')->will($this->returnValue(false));
+		$handler->expects($this->never())->method('isHandling');
 		$handler->expects($this->never())->method('handle');
 
-		$this->logger->pushHandler($handler);
+		$this->logger->addErrorHandler($handler);
 		$this->logger->addWarning('test');
 	}
 
