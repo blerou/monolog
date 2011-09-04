@@ -116,6 +116,11 @@ class Logger
         $this->addHandler($handler, self::ERROR);
     }
 
+    public function addCriticalHandler($handler)
+    {
+        $this->addHandler($handler, self::CRITICAL);
+    }
+
     private function addHandler($handler, $priority)
     {
         $this->handlers[] = array($handler, $priority);

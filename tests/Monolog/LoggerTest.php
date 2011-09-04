@@ -88,8 +88,8 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     public function testChannel()
     {
         $handler = new TestHandler;
-        $this->logger->pushHandler($handler);
-        $this->logger->addWarning('test');
+        $this->logger->addCriticalHandler($handler);
+        $this->logger->addCritical('test');
         list($record) = $handler->getRecords();
         $this->assertEquals(self::NAME, $record['channel']);
     }
