@@ -106,6 +106,11 @@ class Logger
         array_unshift($this->processors, $callback);
     }
 
+    public function addWarningHandler($handler)
+    {
+        $this->handlers[] = array($handler, self::WARNING);
+    }
+
     /**
      * Adds a log record at the DEBUG level.
      *
@@ -221,7 +226,9 @@ class Logger
     private function findHandlerFor($priority)
     {
         foreach ($this->handlers as $handler) {
-            if ($handler->isHandling(array('level' => $priority))) {
+            if (is_array($handler) && $handler[1] == $priority) {
+                return $handler[0];
+            } else if ($handler->isHandling(array('level' => $priority))) {
                 return $handler;
             }
         }

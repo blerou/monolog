@@ -44,10 +44,10 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
 		);
 
 		$handler = $this->getMock('\\Monolog\\Handler\\HandlerInterface');
-		$handler->expects($this->once())->method('isHandling')->will($this->returnValue(true));
+		$handler->expects($this->never())->method('isHandling')->will($this->returnValue(true));
 		$handler->expects($this->once())->method('handle')->with($validRecord);
 
-		$this->logger->pushHandler($handler);
+		$this->logger->addWarningHandler($handler);
 		$this->logger->addWarning($message);
 	}
 
