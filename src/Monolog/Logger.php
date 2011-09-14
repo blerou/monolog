@@ -187,10 +187,10 @@ class Logger
      * @param array $context The log context
      * @return array
      */
-	private function createRecord($level, $levelName, $message, array $context = array())
-	{
-		return array(
-            'message' => (string) $message,
+    private function createRecord($level, $levelName, $message, array $context = array())
+    {
+        return array(
+            'message' => (string)$message,
             'context' => $context,
             'level' => $level,
             'level_name' => $levelName,
@@ -198,7 +198,7 @@ class Logger
             'datetime' => new \DateTime(),
             'extra' => array(),
         );
-	}
+    }
 
     /**
      * Adds a log record.
@@ -210,18 +210,19 @@ class Logger
     {
         foreach ($this->handlers as $handler) {
             if ($handler->isHandling($record)) {
-	            $handler->handle($this->preprocessRecord($record));
-	            return true;
+                $handler->handle($this->preprocessRecord($record));
+                return true;
             }
         }
         return false;
     }
 
-	private function preprocessRecord($record)
-	{
+    private function preprocessRecord($record)
+    {
         foreach ($this->processors as $processor) {
-	        $record = call_user_func($processor, $record);
-        };
-		return $record;
-	}
+            $record = call_user_func($processor, $record);
+        }
+        ;
+        return $record;
+    }
 }
