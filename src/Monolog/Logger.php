@@ -115,7 +115,10 @@ class Logger
      */
     public function addDebug($message, array $context = array())
     {
-        return $this->addRecord($this->createRecord(self::DEBUG, 'DEBUG', $message, $context));
+        return $this->addRecord(
+            $this->createRecord(self::DEBUG, 'DEBUG', $message, $context),
+            $this->findHandlerFor(self::DEBUG)
+        );
     }
 
     /**
@@ -127,7 +130,10 @@ class Logger
      */
     public function addInfo($message, array $context = array())
     {
-        return $this->addRecord($this->createRecord(self::INFO, 'INFO', $message, $context));
+        return $this->addRecord(
+            $this->createRecord(self::INFO, 'INFO', $message, $context),
+            $this->findHandlerFor(self::INFO)
+        );
     }
 
     /**
@@ -139,7 +145,10 @@ class Logger
      */
     public function addWarning($message, array $context = array())
     {
-        return $this->addRecord($this->createRecord(self::WARNING, 'WARNING', $message, $context));
+        return $this->addRecord(
+            $this->createRecord(self::WARNING, 'WARNING', $message, $context),
+            $this->findHandlerFor(self::WARNING)
+        );
     }
 
     /**
@@ -151,7 +160,10 @@ class Logger
      */
     public function addError($message, array $context = array())
     {
-        return $this->addRecord($this->createRecord(self::ERROR, 'ERROR', $message, $context));
+        return $this->addRecord(
+            $this->createRecord(self::ERROR, 'ERROR', $message, $context),
+            $this->findHandlerFor(self::ERROR)
+        );
     }
 
     /**
@@ -163,7 +175,10 @@ class Logger
      */
     public function addCritical($message, array $context = array())
     {
-        return $this->addRecord($this->createRecord(self::CRITICAL, 'CRITICAL', $message, $context));
+        return $this->addRecord(
+            $this->createRecord(self::CRITICAL, 'CRITICAL', $message, $context),
+            $this->findHandlerFor(self::CRITICAL)
+        );
     }
 
     /**
@@ -175,7 +190,10 @@ class Logger
      */
     public function addAlert($message, array $context = array())
     {
-        return $this->addRecord($this->createRecord(self::ALERT, 'ALERT', $message, $context));
+        return $this->addRecord(
+            $this->createRecord(self::ALERT, 'ALERT', $message, $context),
+            $this->findHandlerFor(self::ALERT)
+        );
     }
 
     /**
@@ -200,21 +218,32 @@ class Logger
         );
     }
 
+    private function findHandlerFor($priority)
+    {
+        foreach ($this->handlers as $handler) {
+            if ($handler->isHandling(array('level' => $priority))) {
+                return $handler;
+            }
+        }
+        return null;
+    }
+
     /**
      * Adds a log record.
      *
      * @param array $record the log record to add
+     * @param array $handler the affected handlers
      * @return Boolean Whether the record has been processed
      */
-    private function addRecord($record)
+    private function addRecord($record, $handler)
     {
-        foreach ($this->handlers as $handler) {
-            if ($handler->isHandling($record)) {
-                $handler->handle($this->preprocessRecord($record));
-                return true;
-            }
+        if ($handler) {
+            $record = $this->preprocessRecord($record);
+            $handler->handle($record);
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
     private function preprocessRecord($record)
@@ -222,7 +251,6 @@ class Logger
         foreach ($this->processors as $processor) {
             $record = call_user_func($processor, $record);
         }
-        ;
         return $record;
     }
 }
