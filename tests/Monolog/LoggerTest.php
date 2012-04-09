@@ -136,6 +136,17 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Monolog\Logger::pushProcessor
+     * @expectedException InvalidArgumentException
+     */
+    public function testPushProcessorWithNonCallable()
+    {
+        $logger = new Logger(__METHOD__);
+
+        $logger->pushProcessor(new \stdClass());
+    }
+
+    /**
      * @covers Monolog\Logger::addRecord
      */
     public function testProcessorsAreExecuted()
@@ -149,6 +160,56 @@ class LoggerTest extends \PHPUnit_Framework_TestCase
         $this->logger->addError('test');
         list($record) = $handler->getRecords();
         $this->assertTrue($record['extra']['win']);
+    }
+
+    /**
+     * @covers Monolog\Logger::addRecord
+     */
+    public function testProcessorsAreCalledOnlyOnce()
+    {
+        $logger = new Logger(__METHOD__);
+        $handler = $this->getMock('Monolog\Handler\HandlerInterface');
+        $handler->expects($this->any())
+            ->method('isHandling')
+            ->will($this->returnValue(true))
+        ;
+        $handler->expects($this->any())
+            ->method('handle')
+            ->will($this->returnValue(true))
+        ;
+        $logger->pushHandler($handler);
+
+        $processor = $this->getMockBuilder('Monolog\Processor\WebProcessor')
+            ->disableOriginalConstructor()
+            ->setMethods(array('__invoke'))
+            ->getMock()
+        ;
+        $processor->expects($this->once())
+            ->method('__invoke')
+            ->will($this->returnArgument(0))
+        ;
+        $logger->pushProcessor($processor);
+
+        $logger->addError('test');
+    }
+
+    /**
+     * @covers Monolog\Logger::addRecord
+     */
+    public function testProcessorsNotCalledWhenNotHandled()
+    {
+        $logger = new Logger(__METHOD__);
+        $handler = $this->getMock('Monolog\Handler\HandlerInterface');
+        $handler->expects($this->once())
+            ->method('isHandling')
+            ->will($this->returnValue(false))
+        ;
+        $logger->pushHandler($handler);
+        $that = $this;
+        $logger->pushProcessor(function($record) use ($that){
+            $that->fail('The processor should not be called');
+        });
+        $logger->addAlert('test');
     }
 
     /**
